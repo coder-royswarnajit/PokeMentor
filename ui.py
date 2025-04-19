@@ -3,12 +3,15 @@ from app import process_file_content, process_zip_file, call_gemini, SUPPORTED_F
 import os
 from dotenv import load_dotenv
 from github_integration import GitHubIntegration
+from code_quality import CodeQualityAnalyzer
 
 # Load environment variables
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_API_URL = os.getenv("GEMINI_API_URL")
+SONARCLOUD_TOKEN = os.getenv("SONARCLOUD_TOKEN")
+SONARCLOUD_ORG = os.getenv("SONARCLOUD_ORG")
 
 # Page configuration
 st.set_page_config(
@@ -30,6 +33,12 @@ if 'project_name' not in st.session_state:
     st.session_state.project_name = ""
 if 'purpose' not in st.session_state:
     st.session_state.purpose = "README"
+if 'code_analyzer' not in st.session_state:
+    st.session_state.code_analyzer = CodeQualityAnalyzer(
+        gemini_api_key=GEMINI_API_KEY,
+        sonarcloud_token=SONARCLOUD_TOKEN,
+        sonarcloud_org=SONARCLOUD_ORG
+    )
 
 # Main title
 st.title("Code Documentation Generator")
@@ -69,7 +78,8 @@ with st.sidebar:
             st.warning("No repositories found or access denied.")
 
 # Main content area
-tab1, tab2 = st.tabs(["Generate Documentation", "GitHub Integration"])
+tab1, tab2, tab3 = st.tabs(["Generate Documentation", "GitHub Integration", "Code Quality Analysis"])
+
 
 with tab1:
     st.header("Generate Documentation")
@@ -281,3 +291,138 @@ with tab2:
                                     st.error(f"Failed to create PR: {pr_result['error']}")
                             except Exception as e:
                                 st.error(f"Error creating PR: {str(e)}")
+
+
+with tab3:
+    st.header("Code Quality Analysis")
+    
+    st.write("Upload code files to analyze for quality issues and best practices.")
+    
+    quality_file_upload = st.file_uploader("Upload Code File", 
+                                        type=list(SUPPORTED_FILES.keys()),
+                                        key="quality_file_uploader",
+                                        help="Upload a file to analyze its code quality")
+    
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        analysis_type = st.radio("Analysis Type", 
+                               ["Basic (Rule-based)", "Advanced (AI-powered)", "Professional (SonarCloud)"],
+                               help="Choose analysis method")
+                               
+        if analysis_type == "Professional (SonarCloud)" and not SONARCLOUD_TOKEN:
+            st.warning("SonarCloud token not configured. Please add SONARCLOUD_TOKEN to your .env file.")
+    
+    if quality_file_upload:
+        file_content = process_file_content(quality_file_upload)
+        file_name = quality_file_upload.name
+        
+        if st.button("Analyze Code Quality"):
+            with st.spinner("Analyzing code quality..."):
+                try:
+                    if analysis_type == "Basic (Rule-based)":
+                        analysis_result = st.session_state.code_analyzer.analyze_code(file_content, file_name)
+                    elif analysis_type == "Advanced (AI-powered)":
+                        analysis_result = st.session_state.code_analyzer.analyze_with_ai(file_content, file_name)
+                    else:  # SonarCloud
+                        analysis_result = st.session_state.code_analyzer.analyze_with_sonarcloud(file_content, file_name)
+                    
+                    if "error" in analysis_result:
+                        st.error(f"Analysis failed: {analysis_result['error']}")
+                        if "message" in analysis_result:
+                            st.error(analysis_result["message"])
+                    else:
+                        st.success("Analysis complete!")
+                        
+                        # Display summary
+                        st.subheader("Summary")
+                        if "summary" in analysis_result:
+                            st.write(analysis_result["summary"])
+                        
+                        # Display metrics if available
+                        if "metrics" in analysis_result:
+                            metrics = analysis_result["metrics"]
+                            st.subheader("Metrics")
+                            
+                            # Create metrics cards in rows of 3
+                            metric_items = list(metrics.items())
+                            for i in range(0, len(metric_items), 3):
+                                cols = st.columns(min(3, len(metric_items) - i))
+                                for j, (key, value) in enumerate(metric_items[i:i+3]):
+                                    # Skip None values
+                                    if value is not None:
+                                        with cols[j]:
+                                            st.metric(
+                                                key.replace("_", " ").title(), 
+                                                value if isinstance(value, (int, float)) else str(value)
+                                            )
+                        
+                        # Display issues
+                        if "issues" in analysis_result and analysis_result["issues"]:
+                            st.subheader("Issues Found")
+                            
+                            # Create a dataframe for better display
+                            import pandas as pd
+                            
+                            # Clean up issues data for display
+                            display_issues = []
+                            for issue in analysis_result["issues"]:
+                                display_issue = {
+                                    "Line": issue.get("line", 0),
+                                    "Severity": issue.get("severity", "").title(),
+                                    "Type": issue.get("type", "").replace("_", " ").title(),
+                                    "Message": issue.get("message", "")
+                                }
+                                # Add rule if available (for SonarCloud)
+                                if "rule" in issue and issue["rule"]:
+                                    display_issue["Rule"] = issue["rule"].split(':')[-1]
+                                
+                                display_issues.append(display_issue)
+                            
+                            issues_df = pd.DataFrame(display_issues)
+                            
+                            # Add color coding based on severity
+                            def color_severity(val):
+                                colors = {
+                                    "Error": "background-color: #FFCCCC",
+                                    "Warning": "background-color: #FFFFCC",
+                                    "Info": "background-color: #CCFFFF",
+                                    "Major": "background-color: #FFCCCC",
+                                    "Minor": "background-color: #FFFFCC",
+                                    "Critical": "background-color: #FF9999",
+                                    "Blocker": "background-color: #FF6666"
+                                }
+                                return colors.get(val, "")
+                            
+                            # Display styled dataframe
+                            st.dataframe(
+                                issues_df.style.applymap(color_severity, subset=["Severity"]), 
+                                use_container_width=True
+                            )
+                            
+                            # Allow sorting and filtering
+                            st.write("Filter issues by severity:")
+                            severities = ["All"] + sorted(list(set(i["Severity"] for i in display_issues)))
+                            selected_severity = st.selectbox("Severity", severities)
+                            
+                            if selected_severity != "All":
+                                filtered_df = issues_df[issues_df["Severity"] == selected_severity]
+                                st.dataframe(
+                                    filtered_df.style.applymap(color_severity, subset=["Severity"]), 
+                                    use_container_width=True
+                                )
+                        else:
+                            st.success("No issues found!")
+                        
+                        # Display suggestions if available
+                        if "suggestions" in analysis_result and analysis_result["suggestions"]:
+                            st.subheader("Suggestions")
+                            for suggestion in analysis_result["suggestions"]:
+                                st.markdown(f"- {suggestion}")
+                                
+                except Exception as e:
+                    st.error(f"Error during analysis: {str(e)}")
+                    import traceback
+                    st.error(traceback.format_exc())
+    else:
+        st.info("Please upload a file to analyze.")

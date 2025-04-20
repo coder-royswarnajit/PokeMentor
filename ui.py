@@ -10,8 +10,6 @@ load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_API_URL = os.getenv("GEMINI_API_URL")
-SONARCLOUD_TOKEN = os.getenv("SONARCLOUD_TOKEN")
-SONARCLOUD_ORG = os.getenv("SONARCLOUD_ORG")
 
 # Page configuration
 st.set_page_config(
@@ -35,9 +33,7 @@ if 'purpose' not in st.session_state:
     st.session_state.purpose = "README"
 if 'code_analyzer' not in st.session_state:
     st.session_state.code_analyzer = CodeQualityAnalyzer(
-        gemini_api_key=GEMINI_API_KEY,
-        sonarcloud_token=SONARCLOUD_TOKEN,
-        sonarcloud_org=SONARCLOUD_ORG
+        gemini_api_key=GEMINI_API_KEY
     )
 
 # Main title
@@ -296,22 +292,12 @@ with tab2:
 with tab3:
     st.header("Code Quality Analysis")
     
-    st.write("Upload code files to analyze for quality issues and best practices.")
+    st.write("Upload code files to analyze for quality issues and best practices using AI.")
     
     quality_file_upload = st.file_uploader("Upload Code File", 
                                         type=list(SUPPORTED_FILES.keys()),
                                         key="quality_file_uploader",
                                         help="Upload a file to analyze its code quality")
-    
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        analysis_type = st.radio("Analysis Type", 
-                               ["Basic (Rule-based)", "Advanced (AI-powered)", "Professional (SonarCloud)"],
-                               help="Choose analysis method")
-                               
-        if analysis_type == "Professional (SonarCloud)" and not SONARCLOUD_TOKEN:
-            st.warning("SonarCloud token not configured. Please add SONARCLOUD_TOKEN to your .env file.")
     
     if quality_file_upload:
         file_content = process_file_content(quality_file_upload)
@@ -320,12 +306,7 @@ with tab3:
         if st.button("Analyze Code Quality"):
             with st.spinner("Analyzing code quality..."):
                 try:
-                    if analysis_type == "Basic (Rule-based)":
-                        analysis_result = st.session_state.code_analyzer.analyze_code(file_content, file_name)
-                    elif analysis_type == "Advanced (AI-powered)":
-                        analysis_result = st.session_state.code_analyzer.analyze_with_ai(file_content, file_name)
-                    else:  # SonarCloud
-                        analysis_result = st.session_state.code_analyzer.analyze_with_sonarcloud(file_content, file_name)
+                    analysis_result = st.session_state.code_analyzer.analyze_with_ai(file_content, file_name)
                     
                     if "error" in analysis_result:
                         st.error(f"Analysis failed: {analysis_result['error']}")
@@ -373,10 +354,6 @@ with tab3:
                                     "Type": issue.get("type", "").replace("_", " ").title(),
                                     "Message": issue.get("message", "")
                                 }
-                                # Add rule if available (for SonarCloud)
-                                if "rule" in issue and issue["rule"]:
-                                    display_issue["Rule"] = issue["rule"].split(':')[-1]
-                                
                                 display_issues.append(display_issue)
                             
                             issues_df = pd.DataFrame(display_issues)

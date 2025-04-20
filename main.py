@@ -1,5 +1,5 @@
 import streamlit as st
-from app import process_file_content, process_zip_file, call_gemini, SUPPORTED_FILES
+from core import process_file_content, process_zip_file, call_gemini, SUPPORTED_FILES
 import os
 from dotenv import load_dotenv
 from github_integration import GitHubIntegration

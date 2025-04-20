@@ -13,7 +13,7 @@ GEMINI_API_URL = os.getenv("GEMINI_API_URL")
 
 # Page configuration
 st.set_page_config(
-    page_title="Code Documentation Generator",
+    page_title="PokeMentor",
     page_icon="📝",
     layout="wide",
 )
@@ -37,7 +37,7 @@ if 'code_analyzer' not in st.session_state:
     )
 
 # Main title
-st.title("Code Documentation Generator")
+st.title("PokeMentor")
 
 # Sidebar configuration
 with st.sidebar:

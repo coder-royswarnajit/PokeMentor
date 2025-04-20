@@ -361,13 +361,13 @@ with tab3:
                             # Add color coding based on severity
                             def color_severity(val):
                                 colors = {
-                                    "Error": "background-color: #FFCCCC",
-                                    "Warning": "background-color: #FFFFCC",
-                                    "Info": "background-color: #CCFFFF",
-                                    "Major": "background-color: #FFCCCC",
-                                    "Minor": "background-color: #FFFFCC",
-                                    "Critical": "background-color: #FF9999",
-                                    "Blocker": "background-color: #FF6666"
+                                    "Error": "background-color: #FFCCCC; color: #990000; font-weight: bold",
+                                    "Warning": "background-color: #FFF2CC; color: #806600; font-weight: bold",
+                                    "Info": "background-color: #D9EDF7; color: #31708F; font-weight: bold",
+                                    "Major": "background-color: #FFCCCC; color: #990000; font-weight: bold",
+                                    "Minor": "background-color: #FFF2CC; color: #806600; font-weight: bold",
+                                    "Critical": "background-color: #F2DEDE; color: #A94442; font-weight: bold",
+                                    "Blocker": "background-color: #F8D7DA; color: #721C24; font-weight: bold"
                                 }
                                 return colors.get(val, "")
                             

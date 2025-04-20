@@ -90,4 +90,4 @@ This project is licensed under the terms of the MIT License. See [LICENSE](./LIC
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## 🙌 WebLink
-https://shorturl.at/2dEXi
+https://code-documentation--generator-pxk9mwyf8vcaj6afonyw7v.streamlit.app/#code-documentation-generator

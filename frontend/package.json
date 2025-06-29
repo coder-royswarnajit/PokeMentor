@@ -1,0 +1,27 @@
+{
+  "name": "pokementor-frontend",
+  "version": "1.0.0",
+  "description": "Modern web frontend for PokeMentor - AI-powered code documentation tool",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python api-bridge.py & npx http-server . -p 3000 -c-1 --cors",
+    "start": "npx http-server . -p 3000 -c-1 --cors",
+    "api": "python api-bridge.py"
+  },
+  "keywords": [
+    "ai",
+    "documentation",
+    "code-analysis",
+    "github",
+    "frontend"
+  ],
+  "author": "PokeMentor Team",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "dependencies": {
+    "flask": "^2.3.3",
+    "flask-cors": "^4.0.0"
+  }
+}

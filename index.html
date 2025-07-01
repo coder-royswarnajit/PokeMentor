@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeMentor - AI-Powered Code Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>PokeMentor</h1>
+                        <span>AI-Powered Documentation</span>
+                    </div>
+                </div>
+                
+                <nav class="nav-tabs">
+                    <button class="nav-tab active" data-tab="documentation">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Documentation</span>
+                    </button>
+                    <button class="nav-tab" data-tab="github">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub</span>
+                    </button>
+                    <button class="nav-tab" data-tab="quality">
+                        <i class="fas fa-microscope"></i>
+                        <span>Quality Analysis</span>
+                    </button>
+                </nav>
+
+                <div class="header-actions">
+                    <div class="github-status" id="githubStatus">
+                        <div class="status-dot"></div>
+                        <span>Disconnected</span>
+                    </div>
+                    <button class="theme-toggle" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Documentation Tab -->
+            <div class="tab-content active" id="documentation">
+                <div class="hero-section">
+                    <div class="hero-content">
+                        <h1>Generate Smart Documentation</h1>
+                        <p>Transform your code into comprehensive documentation with AI-powered analysis</p>
+                    </div>
+                </div>
+
+                <div class="content-container">
+                    <div class="content-grid">
+                        <!-- Upload Section -->
+                        <div class="upload-panel">
+                            <div class="panel-header">
+                                <h2>Upload Your Code</h2>
+                                <div class="purpose-toggle">
+                                    <input type="radio" id="readme" name="purpose" value="readme" checked>
+                                    <label for="readme">README</label>
+                                    <input type="radio" id="comments" name="purpose" value="comments">
+                                    <label for="comments">Comments</label>
+                                </div>
+                            </div>
+
+                            <div class="upload-zone" id="uploadZone">
+                                <div class="upload-content">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                    </div>
+                                    <h3>Drop files here or click to browse</h3>
+                                    <p>Supports Python, JavaScript, TypeScript, Java, C++, and more</p>
+                                    <div class="upload-formats">
+                                        <span class="format-tag">.py</span>
+                                        <span class="format-tag">.js</span>
+                                        <span class="format-tag">.ts</span>
+                                        <span class="format-tag">.java</span>
+                                        <span class="format-tag">.zip</span>
+                                    </div>
+                                </div>
+                                <input type="file" id="fileInput" multiple accept=".py,.js,.jsx,.ts,.tsx,.java,.c,.cpp,.cs,.go,.rs,.php,.rb,.swift,.kt,.zip">
+                            </div>
+
+                            <div class="uploaded-files" id="uploadedFiles"></div>
+
+                            <div class="form-section">
+                                <div class="input-group">
+                                    <label for="projectName">Project Name</label>
+                                    <input type="text" id="projectName" placeholder="Enter your project name">
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="customInstructions">Additional Instructions</label>
+                                    <textarea id="customInstructions" placeholder="Add specific requirements or context for the AI..."></textarea>
+                                </div>
+
+                                <button class="btn btn-primary btn-large" id="generateBtn">
+                                    <i class="fas fa-magic"></i>
+                                    <span>Generate Documentation</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Preview Section -->
+                        <div class="preview-panel">
+                            <div class="panel-header">
+                                <h2>Preview</h2>
+                                <div class="preview-actions">
+                                    <button class="btn btn-secondary" id="copyBtn" disabled>
+                                        <i class="fas fa-copy"></i>
+                                        Copy
+                                    </button>
+                                    <button class="btn btn-secondary" id="downloadBtn" disabled>
+                                        <i class="fas fa-download"></i>
+                                        Download
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="preview-container" id="previewContainer">
+                                <div class="preview-placeholder">
+                                    <div class="placeholder-icon">
+                                        <i class="fas fa-eye"></i>
+                                    </div>
+                                    <h3>Documentation Preview</h3>
+                                    <p>Your generated documentation will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GitHub Tab -->
+            <div class="tab-content" id="github">
+                <div class="hero-section">
+                    <div class="hero-content">
+                        <h1>GitHub Integration</h1>
+                        <p>Connect to GitHub and create pull requests with your documentation</p>
+                    </div>
+                </div>
+
+                <div class="content-container">
+                    <div class="content-grid">
+                        <!-- GitHub Setup -->
+                        <div class="github-panel">
+                            <div class="panel-header">
+                                <h2>Connect to GitHub</h2>
+                            </div>
+
+                            <div class="github-connect">
+                                <div class="input-group">
+                                    <label for="githubToken">Personal Access Token</label>
+                                    <div class="token-input">
+                                        <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+                                        <button class="btn btn-primary" id="connectGithubBtn">
+                                            <i class="fas fa-link"></i>
+                                            Connect
+                                        </button>
+                                    </div>
+                                    <small>Token should have 'repo' scope permissions</small>
+                                </div>
+
+                                <div class="github-repos" id="githubRepos" style="display: none;">
+                                    <div class="input-group">
+                                        <label for="repoSelect">Repository</label>
+                                        <select id="repoSelect">
+                                            <option value="">Choose a repository...</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="input-group">
+                                        <label for="branchSelect">Branch</label>
+                                        <select id="branchSelect">
+                                            <option value="">Choose a branch...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PR Creation -->
+                        <div class="pr-panel">
+                            <div class="panel-header">
+                                <h2>Create Pull Request</h2>
+                            </div>
+                            
+                            <div class="pr-form" id="prForm" style="display: none;">
+                                <div class="input-group">
+                                    <label for="prTitle">PR Title</label>
+                                    <input type="text" id="prTitle" placeholder="Add AI-generated documentation">
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="prDescription">Description</label>
+                                    <textarea id="prDescription" placeholder="This PR adds comprehensive documentation generated by AI..."></textarea>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="commitMessage">Commit Message</label>
+                                    <input type="text" id="commitMessage" placeholder="docs: add AI-generated documentation">
+                                </div>
+
+                                <button class="btn btn-primary btn-large" id="createPrBtn">
+                                    <i class="fas fa-code-branch"></i>
+                                    <span>Create Pull Request</span>
+                                </button>
+                            </div>
+
+                            <div class="pr-placeholder" id="prPlaceholder">
+                                <div class="placeholder-icon">
+                                    <i class="fab fa-github"></i>
+                                </div>
+                                <h3>Ready to Create PR</h3>
+                                <p>Connect to GitHub and generate documentation first</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quality Analysis Tab -->
+            <div class="tab-content" id="quality">
+                <div class="hero-section">
+                    <div class="hero-content">
+                        <h1>Code Quality Analysis</h1>
+                        <p>Get AI-powered insights into your code quality and best practices</p>
+                    </div>
+                </div>
+
+                <div class="content-container">
+                    <div class="content-grid">
+                        <!-- Analysis Upload -->
+                        <div class="analysis-panel">
+                            <div class="panel-header">
+                                <h2>Upload for Analysis</h2>
+                            </div>
+                            
+                            <div class="upload-zone" id="qualityUploadZone">
+                                <div class="upload-content">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-search-plus"></i>
+                                    </div>
+                                    <h3>Drop a file here or click to browse</h3>
+                                    <p>Upload a single file for quality analysis</p>
+                                </div>
+                                <input type="file" id="qualityFileInput" accept=".py,.js,.jsx,.ts,.tsx,.java,.c,.cpp,.cs,.go,.rs,.php,.rb,.swift,.kt">
+                            </div>
+
+                            <div class="uploaded-files" id="qualityUploadedFiles"></div>
+
+                            <button class="btn btn-primary btn-large" id="analyzeBtn" disabled>
+                                <i class="fas fa-microscope"></i>
+                                <span>Analyze Code Quality</span>
+                            </button>
+                        </div>
+
+                        <!-- Analysis Results -->
+                        <div class="results-panel">
+                            <div class="panel-header">
+                                <h2>Analysis Results</h2>
+                            </div>
+                            
+                            <div class="results-container" id="resultsContainer">
+                                <div class="results-placeholder">
+                                    <div class="placeholder-icon">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <h3>Quality Insights</h3>
+                                    <p>Upload a file and run analysis to see detailed results</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-content">
+                <div class="loading-spinner">
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                </div>
+                <h3 id="loadingText">Processing...</h3>
+                <p id="loadingSubtext">Please wait while we analyze your code</p>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div class="toast-container" id="toastContainer"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

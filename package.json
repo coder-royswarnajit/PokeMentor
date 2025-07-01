@@ -1,0 +1,25 @@
+{
+  "name": "pokementor-frontend",
+  "version": "2.0.0",
+  "description": "Modern web frontend for PokeMentor - AI-powered code documentation tool",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "vite preview --port 3000"
+  },
+  "keywords": [
+    "ai",
+    "documentation",
+    "code-analysis",
+    "github",
+    "frontend"
+  ],
+  "author": "PokeMentor Team",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "dependencies": {}
+}
